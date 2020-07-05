@@ -27,21 +27,23 @@ def connectEEG():
 
 def collectData(inlet):
 	channel_data = []
-	for i in range(1): # n frames/second will be collected
+	for i in range(10): # n frames/second will be collected
 		channel = []
 		for i in range(8): # n electroid channels
         		sample, timestamp = inlet.pull_sample()
         		channel.append(sample[:60])
-
 		channel_data.append(channel)
 
-	np.save('testfile123', channel_data)
+	return(channel_data)
 
-	print (channel_data)
-"""
-plt.plot(channel_data[0][2])
-plt.show()
-"""
+def saveData(channel_data):
+	np.save('testfile123', np.array(channel_data).reshape(-1,8,60))
+
+
+#collectData(connectEEG())
+#plt.plot(channel_data[0][1])
+#plt.show()
+
 
 """
 # outputs the FPS
