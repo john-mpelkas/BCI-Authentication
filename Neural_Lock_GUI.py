@@ -1,10 +1,19 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog, StringVar
-import pull_lsl_data
+import Pull_LSL_Data
 import threading
 import time
 import os
+# -----------------------------------------------------------------------------
+# Neual Lock GUI contains:
+# @BciInterface - Model-Veiw-Controller
+#     @StartPage - Child of 'BciInterface'  (Navigation Page)
+#     @DataPage - Child of 'BciInterface'   (Navigation Page)
+#         @WBChecker - Child of 'DataPage'  (Visual Evolked Potential Page)
+#         @BWChecker - Child of 'DataPage'  (Visual Evolked Potential Page)
+#         @InitiateConnection - Child of 'DataPage' (Intermediate Page for VEP)
+# -----------------------------------------------------------------------------
 
 class BciInterface(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -17,13 +26,10 @@ class BciInterface(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames={}
+
         for F in (StartPage, DataPage):
-            #Creating object:
-            #Container holds frames
-            #self allows other classes to access show_frame
             frame = F(container, self)
             self.frames[F] = frame
-            #not 100% sure on this
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame(StartPage)
@@ -32,11 +38,10 @@ class BciInterface(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-
 class StartPage(tk.Frame):
-        # Self -> StartPage
-        # parent -> container
-        # controller -> BciInterface Class in order to access show_frame
+# Self -> StartPage
+# parent -> container
+# controller -> BciInterface Class in order to access show_frame
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
@@ -55,20 +60,23 @@ class StartPage(tk.Frame):
         authenticate.pack(side='bottom', padx=10, pady=5)
 
 class DataPage(tk.Frame, tk.Tk):
-    dir=""
+# Self -> StartPage
+# parent -> container
+# controller -> BciInterface Class in order to access show_frame
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.channel_data=[]
         filePath = tk.Label(self, text="Enter File Path To Save To: ", padx=10, pady=10)
 
-        entry= tk.Entry(self)
-        entry.insert(0, os.getcwd())
-
-        # print(entry.get()) get text from the entry field
+        self.entryDir= tk.Entry(self)
+        self.entryDir.insert(0, os.getcwd())
+        self.entryUser = tk.Entry(self)
+        self.entryUser.insert(0, "*file name*")
+        labelUser = tk.Label(self, text="Enter User:")
 
         browse = tk.Button(self, text="Browse", padx=10, pady=5,
                             fg="white", bg="#263D42",
-                            command = lambda: self.getFileDir(entry))
+                            command = lambda: self.getFileDir())
 
         goBack = tk.Button(self, text="Back", padx=10, pady=5,
                             fg="white", bg="#263D42", command=lambda:
@@ -76,18 +84,22 @@ class DataPage(tk.Frame, tk.Tk):
 
         start = tk.Button(self, text="Start", padx=10, pady=5,
                             fg="white", bg="#263D42", command=lambda:
-                            self.vepSlideShow()) #Change to vepSlideShow for show
+                            self.vepSlideShow())
 
         filePath.grid(row=0, column=1, columnspan=3, padx= 5, pady=5)
         goBack.grid(row=0,column=0, padx= 5, pady=5)
         browse.grid(row=1, column=0, padx= 5, pady=5)
-        entry.grid(row=1, column=1, columnspan=3, padx= 5, pady=5)
+        self.entryDir.grid(row=1, column=1, columnspan=3, padx= 5, pady=5)
+        self.entryUser.grid(row=2, column=1, columnspan=3, padx= 5, pady=5)
+        labelUser.grid(row=2, column=0, padx= 5, pady=5)
         start.grid(row=0, rowspan=2, column=5 , columnspan=3, padx= 5, pady=5)
 
-
+    def getFileDir(self):
+        filename = filedialog.askdirectory()
+        self.entryDir.delete(0, 'end')
+        self.entryDir.insert(0, filename)
 
     def vepSlideShow(self):
-
         root = tk.Tk()
         root.title("P300")
         root.attributes('-fullscreen', True)
@@ -104,21 +116,19 @@ class DataPage(tk.Frame, tk.Tk):
         frames[InitiateConnection] = InitiateConnection(container, root)
         frames[InitiateConnection].grid(row=0, column=1, sticky="nsew")
 
-
-
         def whtChecker():
             frames[WBChecker].tkraise()
         def blkChecker():
             frames[BWChecker].tkraise()
-        def close():
-            pull_lsl_data.saveData(self.channel_data)
-            root.destroy()
         def updateTime():
             frames[InitiateConnection].updateTime()
         def gatherData():
             time.sleep(4)
             self.channel_data = pull_lsl_data.collectData(inlet)
-
+        def close():
+            pull_lsl_data.saveData(self.entryUser.get(),
+                            self.entryDir.get(), self.channel_data)
+            root.destroy()
 
         inlet = pull_lsl_data.connectEEG()
 
@@ -136,7 +146,6 @@ class DataPage(tk.Frame, tk.Tk):
         root.after(14000, whtChecker)
         root.after(15000, blkChecker)
         root.after(16000, close)
-
 
         root.mainloop()
 
@@ -157,8 +166,6 @@ class InitiateConnection(tk.Frame):
         self.timer = self.timer - 1
         print ( self.timer)
         self.beginLab['text'] = self.timer
-        #self.beginLab.update()
-
 
 class WBChecker(tk.Frame):
     def __init__(self, parent, controller):

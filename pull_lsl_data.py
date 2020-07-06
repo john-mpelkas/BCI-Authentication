@@ -1,15 +1,10 @@
 from pylsl import StreamInlet, resolve_stream
 import time
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import style
 from collections import deque
-
-# used to callibrate the length of capture
-#last_print = time.time()
-#fps_counter = deque(maxlen=150)
-
-
 
 def connectEEG():
 # finding eeg and starting stream
@@ -20,41 +15,19 @@ def connectEEG():
 	print("connected")
 
 	return (inlet)
-# used to measure about n-seconds of reading
-#seconds = 1
-#fps = 100 * seconds
-
 
 def collectData(inlet):
 	channel_data = []
 	for i in range(10): # n frames/second will be collected
 		channel = []
 		for i in range(8): # n electroid channels
-        		sample, timestamp = inlet.pull_sample()
-        		channel.append(sample[:60])
+				sample, timestamp = inlet.pull_sample()
+				channel.append(sample[:60])
+				print(sample)
 		channel_data.append(channel)
-
 	return(channel_data)
 
-def saveData(channel_data):
-	np.save('testfile123', np.array(channel_data).reshape(-1,8,60))
-
-
-#collectData(connectEEG())
-#plt.plot(channel_data[0][1])
-#plt.show()
-
-
-"""
-# outputs the FPS
-	fps_counter.append(time.time() - last_print)
-	last_print = time.time()
-	cur_raw_hz = 1/(sum(fps_counter)/len(fps_counter))
-	print(cur_raw_hz)
-
-# used to plot the n-th frame
-for i in range(2):
-	for chan in channel_data:
-		plt.plot(channel_data[chan][:60])
-plt.show()
-"""
+def saveData(user, pathDir, channel_data):
+	currTime = time.time()
+	np.save(os.path.join(f"{pathDir}", f"{user}{currTime}.npy"),
+					np.array(channel_data).reshape(-1,8,60))
