@@ -1,0 +1,3 @@
+
+global whileTrue
+whileTrue = True

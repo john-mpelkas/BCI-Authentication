@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog, StringVar
 import Pull_LSL_Data
+import Settings
 import threading
 import time
 import os
@@ -17,7 +18,7 @@ import os
 # NOTE:OpenBCI Software is needed in order to grab the data stream from LSL
 # Be sure that:
 #   1. OpenBCI is streaming
-#   2. LSL is streaming 
+#   2. LSL is streaming
 # -----------------------------------------------------------------------------
 
 class BciInterface(tk.Tk):
@@ -98,7 +99,7 @@ class DataPage(tk.Frame, tk.Tk):
         self.entryUser.grid(row=2, column=1, columnspan=3, padx= 5, pady=5)
         labelUser.grid(row=2, column=0, padx= 5, pady=5)
         start.grid(row=0, rowspan=2, column=5 , columnspan=3, padx= 5, pady=5)
-
+# TODO: Figure out how to capture only x frames DONE 
     def getFileDir(self):
         filename = filedialog.askdirectory()
         self.entryDir.delete(0, 'end')
@@ -128,14 +129,15 @@ class DataPage(tk.Frame, tk.Tk):
         def updateTime():
             frames[InitiateConnection].updateTime()
         def gatherData():
-            time.sleep(4)
-            self.channel_data = pull_lsl_data.collectData(inlet)
+            Settings.whileTrue = True
+            time.sleep(5)
+            Pull_LSL_Data.collectData(inlet, self.entryUser.get(),
+                 self.entryDir.get())
         def close():
-            pull_lsl_data.saveData(self.entryUser.get(),
-                            self.entryDir.get(), self.channel_data)
+            Settings.whileTrue = False
             root.destroy()
 
-        inlet = pull_lsl_data.connectEEG()
+        inlet = Pull_LSL_Data.connectEEG()
 
         threading.Thread(target=gatherData).start()
         root.after(2000, updateTime)
@@ -151,7 +153,6 @@ class DataPage(tk.Frame, tk.Tk):
         root.after(14000, whtChecker)
         root.after(15000, blkChecker)
         root.after(16000, close)
-
         root.mainloop()
 
 class InitiateConnection(tk.Frame):
@@ -178,6 +179,7 @@ class WBChecker(tk.Frame):
         canvas = tk.Canvas(self)
         canvas.config(height=1080, width=1920)
         canvas.pack()
+
         SIZE=124
         color = 'white'
 
