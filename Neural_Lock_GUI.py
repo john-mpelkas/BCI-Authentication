@@ -13,6 +13,11 @@ import os
 #         @WBChecker - Child of 'DataPage'  (Visual Evolked Potential Page)
 #         @BWChecker - Child of 'DataPage'  (Visual Evolked Potential Page)
 #         @InitiateConnection - Child of 'DataPage' (Intermediate Page for VEP)
+#
+# NOTE:OpenBCI Software is needed in order to grab the data stream from LSL
+# Be sure that:
+#   1. OpenBCI is streaming
+#   2. LSL is streaming 
 # -----------------------------------------------------------------------------
 
 class BciInterface(tk.Tk):
