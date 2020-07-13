@@ -8,6 +8,11 @@ from matplotlib.figure import Figure
 from tkinter import filedialog
 # -----------------------------------
 # TODO: Restructure this entire file
+# -Change display graph to class to hold
+# each graph canvas.
+# -Cleanup syntax
+# -Display each individual channel with
+# the option to cycle through frames
 # -----------------------------------
 def compareWindow():
     root = tk.Tk()
