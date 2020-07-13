@@ -3,9 +3,6 @@ import Settings
 import time
 import os
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import style
-from collections import deque
 
 flag = False
 
@@ -25,8 +22,8 @@ def collectData(inlet, user, pathDir):
 	while(Settings.whileTrue):
 		channel = []
 		for i in range(8):
-				sample, timestamp = inlet.pull_sample()
-				channel.append(sample[:60])
+			sample, timestamp = inlet.pull_sample()
+			channel.append(sample[:60])
 		channel_data.append(channel)
 	saveData(channel_data, user, pathDir)
 

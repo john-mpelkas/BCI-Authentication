@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog, StringVar
+import numpy as np
+import CompareData
 import Pull_LSL_Data
 import Settings
 import threading
@@ -58,12 +60,20 @@ class StartPage(tk.Frame):
                         padx=10, pady=5, fg="white", bg="#263D42",
                         command=lambda: controller.show_frame(DataPage))
 
+
+        compare = tk.Button (self, text="Compare", padx=10,
+                        pady=5, fg="white", bg="#263D42",
+                        command=lambda: CompareData())
+
         authenticate = tk.Button (self, text="Authenticate", padx=10,
                         pady=5, fg="white", bg="#263D42")
+
+
 
         label.pack(side='top')
         gatherData.pack(side='bottom', padx=10, pady=5)
         authenticate.pack(side='bottom', padx=10, pady=5)
+        compare.pack(side='bottom', padx=10, pady=5)
 
 class DataPage(tk.Frame, tk.Tk):
 # Self -> StartPage
@@ -99,7 +109,7 @@ class DataPage(tk.Frame, tk.Tk):
         self.entryUser.grid(row=2, column=1, columnspan=3, padx= 5, pady=5)
         labelUser.grid(row=2, column=0, padx= 5, pady=5)
         start.grid(row=0, rowspan=2, column=5 , columnspan=3, padx= 5, pady=5)
-# TODO: Figure out how to capture only x frames DONE 
+# TODO: Figure out how to capture only x frames DONE
     def getFileDir(self):
         filename = filedialog.askdirectory()
         self.entryDir.delete(0, 'end')
@@ -139,6 +149,8 @@ class DataPage(tk.Frame, tk.Tk):
 
         inlet = Pull_LSL_Data.connectEEG()
 
+
+# TODO: Terminate all `after` if window is closed
         threading.Thread(target=gatherData).start()
         root.after(2000, updateTime)
         root.after(4000, updateTime)
