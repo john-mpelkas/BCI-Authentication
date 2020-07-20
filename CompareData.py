@@ -14,66 +14,76 @@ from tkinter import filedialog
 # -Display each individual channel with
 # the option to cycle through frames
 # -----------------------------------
-def compareWindow():
-    root = tk.Tk()
-    root.configure(background="purple")
-    root.geometry("1200x850")
-    frame = tk.Frame(root, background="yellow")
-    frame.grid(row=0)
-    canvas = tk.Canvas(root)
-    canvas.configure(width=1000, height=700, background="red")
-    canvas.grid(row=1, sticky='nesw')
+class GraphObjects():
 
-    fileBut1 = tk.Button (frame,text="File 1:", padx=10,
-                    pady=5, fg="white", bg="#263D42",
-                    command=lambda: getFile(filePath1))
-    filePath1 = tk.Entry(frame)
+    def __init__(self, file1, file2, root):
 
-    fileBut2 = tk.Button (frame,text="File 2:", padx=10,
-                    pady=5, fg="white", bg="#263D42",
-                    command=lambda: getFile(filePath2))
-    filePath2 = tk.Entry(frame)
+        self.file1Data = np.load(file1)
+        self.file2Data = np.load(file2)
+        print (self.file1Data)
+        self.counter = 0
+        self.figures = {}
+        self.plots = {}
+        self.canvas = {}
 
-    display = tk.Button(frame,text="Display", padx=10,
-                    pady=5, fg="white", bg="#263D42",
-                    command=lambda:getGraphs)
+        button = tk.Button(root, text="NEXT", command=lambda: self.nextGraph())
+        button.grid(row=2, column = 3)
 
-    def getGraphs():
-        graphDic = displayGraph(filePath1.get(), filePath2.get(), canvas)
+        button = tk.Button(root, text="PREVIOUS", command=lambda: self.previousGraph())
+        button.grid(row=2, column = 2)
 
-        print(graphDic)
+    def displayGraph(self, dataFrame, frame):
 
-    fileBut1.grid(row=0, column=0)
-    filePath1.grid(row=0,column=1)
-    fileBut2.grid(row=0,column=2)
-    filePath2.grid(row=0,column=3)
-    display.grid(row=0,column=4)
+        for i in range(8):
+            self.figures["channel{0}F".format(i)] = Figure(figsize=(4,4), dpi=100)
+            self.plots["channel{0}A".format(i)] = self.figures["channel{0}F".format(i)].add_subplot(111)
+            self.plots["channel{0}A".format(i)].set_title("Channel {0}".format(i+1))
+            self.plots["channel{0}A".format(i)].plot(self.file1Data[dataFrame][i], 'b-')
+            self.plots["channel{0}A".format(i)].plot(self.file2Data[dataFrame][i], 'r-')
 
-    root.mainloop()
-
-class getFile(filePath):
-    filename = filedialog.askopenfilename()
-    filePath.delete(0, 'end')
-    filePath.insert(0, filename)
+            self.canvas["channel{0}Canvas".format(i)] = FigureCanvasTkAgg(self.figures["channel{0}F".format(i)], frame)
+            self.canvas["channel{0}Canvas".format(i)].draw()
+            if (i < 4):
+                columnNum = i + 1
+                self.canvas["channel{0}Canvas".format(i)].get_tk_widget().grid(row=0, column=columnNum)
+            else:
+                columnNum = i - 3
+                self.canvas["channel{0}Canvas".format(i)].get_tk_widget().grid(row=1, column=columnNum)
 
 
-def displayGraph(file1, file2, frame):
-    file1Data = np.load(file1)
-    file2Data = np.load(file2)
-# TODO Make graphs
-    graphs = {}
-    for i in range(3):
-        f = Figure(figsize=(5,5), dpi=100)
-        a = f.add_subplot(111)
-        a.plot(file1Data[i][1])
-        a.plot(file2Data[i][1])
-        graphs["graph{0}".format(i)] = f
+    def updateGraph(self, dataFrame):
 
-    canvasDic = {}
-    for i in range(3):
-        canvas2 = FigureCanvasTkAgg(graphs["graph{0}".format(i)], frame)
-        canvas2.get_tk_widget().grid(row=1, column=i)
-        canvasDic["canvas{0}".format(i)] = canvas2
-    return (canvasDic)
+        for i in range(8):
+            self.plots["channel{0}A".format(i)].lines[0].remove()
+            self.plots["channel{0}A".format(i)].lines[0].remove()
+            self.plots["channel{0}A".format(i)].plot(self.file1Data[dataFrame][i], 'b-')
+            self.plots["channel{0}A".format(i)].plot(self.file2Data[dataFrame][i], 'r-')
+            self.canvas["channel{0}Canvas".format(i)].draw()
+            if (i < 4):
+                columnNum = i + 1
+                self.canvas["channel{0}Canvas".format(i)].get_tk_widget().grid(row=0, column=columnNum)
+            else:
+                columnNum = i - 3
+                self.canvas["channel{0}Canvas".format(i)].get_tk_widget().grid(row=1, column=columnNum)
 
-compareWindow()
+# TODO: Add edge condition
+    def nextGraph(self):
+        self.counter = self.counter+1
+        self.updateGraph(self.counter)
+
+    def previousGraph(self):
+        if(self.counter>0):
+            self.counter = self.counter-1
+            self.updateGraph(self.counter)
+
+
+file1 = r"C:\Users\jwmpe\Desktop\Data_Collected\JohnTest.npy"
+file2 = r"C:\Users\jwmpe\Desktop\Data_Collected\JohnTest2.npy"
+
+root = tk.Tk()
+
+x = GraphObjects(file1, file2, root)
+
+x.displayGraph(x.counter, root)
+
+root.mainloop()
