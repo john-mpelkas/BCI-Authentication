@@ -7,8 +7,8 @@ import numpy as np
 flag = False
 
 def connectEEG():
-# finding eeg and starting stream
-# TODO: Add Try/Catch
+	# finding eeg to stream
+	# TODO: Add Try/Catch
 	print("looking for an EEG stream...")
 	streams = resolve_stream('type', 'EEG')
 
@@ -23,11 +23,13 @@ def collectData(inlet, user, pathDir):
 		channel = []
 		for i in range(8):
 			sample, timestamp = inlet.pull_sample()
-			channel.append(sample[:60])
+			channel.append(sample[:60]) #Only untalizing 60/125 bins
 		channel_data.append(channel)
 	saveData(channel_data, user, pathDir)
 
 def saveData(data, user, pathDir):
 	currTime = time.time()
+	a = np.array(data).reshape(-1,8,60)
+	print (a.shape)
 	np.save(os.path.join(f"{pathDir}", f"{user}{currTime}.npy"),
 					np.array(data).reshape(-1,8,60))

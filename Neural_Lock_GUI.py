@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog, StringVar
 import numpy as np
-import CompareData
 import Pull_LSL_Data
 import Settings
 import threading
@@ -20,7 +19,7 @@ import os
 # NOTE:OpenBCI Software is needed in order to grab the data stream from LSL
 # Be sure that:
 #   1. OpenBCI is streaming
-#   2. LSL is streaming
+#   2. LSL within OpenBCI Software is streaming
 # -----------------------------------------------------------------------------
 
 class BciInterface(tk.Tk):
@@ -75,6 +74,7 @@ class StartPage(tk.Frame):
         authenticate.pack(side='bottom', padx=10, pady=5)
         compare.pack(side='bottom', padx=10, pady=5)
 
+# TODO: Add two buttons to save to train/test directory
 class DataPage(tk.Frame, tk.Tk):
 # Self -> StartPage
 # parent -> container
@@ -164,7 +164,7 @@ class DataPage(tk.Frame, tk.Tk):
         root.after(13000, blkChecker)
         root.after(14000, whtChecker)
         root.after(15000, blkChecker)
-        root.after(16000, close)
+        root.after(17000, close)
         root.mainloop()
 
 class InitiateConnection(tk.Frame):
@@ -193,7 +193,7 @@ class WBChecker(tk.Frame):
         canvas.pack()
 
         SIZE=124
-        color = 'white'
+        color = 'yellow' #white
 
         for y in range(9):
 
@@ -203,15 +203,15 @@ class WBChecker(tk.Frame):
                 x2 = x1 + SIZE
                 y2 = y1 + SIZE
                 canvas.create_rectangle((x1, y1, x2, y2), fill=color)
-                if color == 'white':
-                    color = 'black'
+                if color == 'yellow':
+                    color = 'purple'
                 else:
-                    color = 'white'
+                    color = 'yellow'
 
-            if color == 'white':
-                color = 'black'
+            if color == 'yellow':
+                color = 'purple'
             else:
-                color = 'white'
+                color = 'yellow'
 
 class BWChecker(tk.Frame):
     def __init__(self, parent, controller):
@@ -221,7 +221,7 @@ class BWChecker(tk.Frame):
         canvas2.pack()
 
         SIZE=124
-        color = 'black'
+        color = 'purple' #black
 
         for y in range(9):
 
@@ -231,15 +231,15 @@ class BWChecker(tk.Frame):
                 x2 = x1 + SIZE
                 y2 = y1 + SIZE
                 canvas2.create_rectangle((x1, y1, x2, y2), fill=color)
-                if color == 'white':
-                    color = 'black'
+                if color == 'yellow':
+                    color = 'purple'
                 else:
-                    color = 'white'
+                    color = 'yellow'
 
-            if color == 'white':
-                color = 'black'
+            if color == 'yellow':
+                color = 'purple'
             else:
-                color = 'white'
+                color = 'yellow'
 
 app = BciInterface(tk.Tk)
 app.mainloop()

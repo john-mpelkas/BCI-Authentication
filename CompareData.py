@@ -7,12 +7,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from tkinter import filedialog
 # -----------------------------------
-# TODO: Restructure this entire file
-# -Change display graph to class to hold
-# each graph canvas.
-# -Cleanup syntax
-# -Display each individual channel with
-# the option to cycle through frames
+# Script which allows for comparing two files split up between each channel
 # -----------------------------------
 class GraphObjects():
 
@@ -77,8 +72,8 @@ class GraphObjects():
             self.updateGraph(self.counter)
 
 
-file1 = r"C:\Users\jwmpe\Desktop\Data_Collected\JohnTest.npy"
-file2 = r"C:\Users\jwmpe\Desktop\Data_Collected\JohnTest2.npy"
+file1 = r"C:\Users\mpelkasj\Desktop\EEG_Data\B&W Data - Correct\JohnCorrect1595619934.npy"
+file2 = r"C:\Users\mpelkasj\Desktop\EEG_Data\Y&P Data - Incorrect\JohnY&P1595622367.npy"
 
 root = tk.Tk()
 
