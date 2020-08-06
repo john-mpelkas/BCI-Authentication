@@ -16,7 +16,7 @@ Neural Lock will be a potential new form of biometric identification that can be
 The Neural Lock GUI allows for a ease of use when working with data that was collected with this program. This GUI can be run once this repository is cloned with python 3.7 or higher (*with all required libraries*). *Neural_lock_GUI.py* is the main controller in this application. This main page allows for navigation to collect data/view data/and authenticate.
 > NOTE: Authentication and Compare data are yet to be hooked up to the controller. Compare Data can be run directly from the *CompareData.py* directly, changing the directories to the correct file destination
 
-![](Images\NeuralLockGUIHomePage.png)
+![GUI](Images/NeuralLockGUIHomePage.png)
 
 **Gathering Data**
 
@@ -25,11 +25,11 @@ In order to begin gathering data the OpenBCI Hub needs to be installed (*https:/
 
 One the OpenBCI Hub is running be sure to *Start Data Stream* as well as set up the Networking interface. The configurations of the Networking interface can be seen in the image below.
 
-![](Images\LSLConfig.png)
+![](Images/LSLConfig.png)
 
 Once this is set up and streaming data it is able to begin streaming data. When *Gather Training Data* is selected it will bring you to a page to set up a file directory to save to as well as the prefix of the file name.
 
-![](Images\GatherDataPage.png)
+![](Images/GatherDataPage.png)
 
 If the OpenBCI Hub is configured correctly a screen should appear stating that the LSL communication has been initiated and will begin gathering data. After three seconds of a timer a black and white checkered pattern will begin to flash. To get clear data it is best to stay perfectly still without blinking for the 12 seconds of the presentation.
 
@@ -37,7 +37,7 @@ If the OpenBCI Hub is configured correctly a screen should appear stating that t
 
 As we have not attached the *CompareData.py* to the main controller the *Compare* button on the home page will not compare data. It is possible to still utilize this function by calling this file directly. Changing the file paths to the correct file will allow this application to execute correctly. Below is an example of two files being compared. Each file 1 is illustrated by the red line whereas the blue like representing file 2.
 
-![](Images\CompareDataVisual.png)
+![](Images/CompareDataVisual.png)
 
 **Authenticate**
 
