@@ -4,6 +4,9 @@
 # we based our model on their work with time series recognition for gyroscopic and acceleration data.
 #
 # Imports for the CNN model
+from IPython.display import SVG
+import pydot
+import graphviz
 from numpy import mean
 from numpy import std
 from numpy import dstack
@@ -14,14 +17,12 @@ from keras.layers import Flatten
 from keras.layers import Dropout
 from keras.layers.convolutional import Conv1D
 from keras.layers.convolutional import MaxPooling1D
-
-
+from tensorflow.python.keras.utils.vis_utils import plot_model, model_to_dot
 
 # load a CSV file as an array for use
 def load_data_file(path):
     data_frame = read_csv(path, header=None, delim_whitespace=True)
     return data_frame.values
-
 
 # reformats the data from load_data_file() into a 3d array
 def load_file_group(file_names, prefix_variable=''):
@@ -40,7 +41,7 @@ def load_dataset_group(group, group_2, prefix_variable=''):
     # we have 8 channels that we recorded data from and the data from these 8 channels are held in files, this loads those
     # files as an array
     file_names = list()
-    #
+    #The name of the file for the respective test and train datasets found in their respective train and test folders
     file_names += [r'\masterFile.txt']
     # loads the input data we are using
     X_variable = load_file_group(file_names, path)
@@ -64,28 +65,37 @@ def load_dataset(prefix_variable=''):
 
 # runs and tests the model, this is where the neural network is actually instantiated
 def test_model(train_set_X, train_set_y, test_set_X, test_set_y):
-    #sets required variables for the keras.fit() method
-    verbose, epochs, batch_size = 0, 10, 32
+    #sets required variables for the keras.fit() method, the batch size is how many samples are processed at one time,
+    #epochs are how long the neural network trains for and verbose is for trouble shooting and debugging
+    verbose, epochs, batch_size = 0, 1000, 10
     number_of_timesteps, number_of_features, number_of_outputs = train_set_X.shape[1], train_set_X.shape[2], train_set_y.shape[1]
     #instantiates the model as a keras.Sequential() model
     test_CNN = Sequential()
 
     #input layer
-    test_CNN.add(Conv1D(filters=64, kernel_size=3, activation='selu', input_shape=(number_of_timesteps, number_of_features)))
+    test_CNN.add(Conv1D(filters=64, kernel_size=3, activation='relu', input_shape=(number_of_timesteps, number_of_features)))
+    #test_CNN.add(Dropout(0.5))
 
     #hidden layers
-    test_CNN.add(Conv1D(filters=64, kernel_size=3, activation='tanh'))
-    test_CNN.add(Conv1D(filters=64, kernel_size=3, activation='tanh'))
+    test_CNN.add(Conv1D(filters=64, kernel_size=3, activation='relu'))
+    #test_CNN.add(Conv1D(filters=64, kernel_size=3, activation='tanh'))
 
-    #the drop out layer, this is used to help prevent overfitting by randomly dropping nodes in the network
+    #the drop out layer, this is used to help prevent overfitting by randomly dropping nodes in the network, in the case
+    # of the max pooling it downsamples the data we have to only include maximum values, or the most present features
+    # and then creates an array holding those features and passes it on to the next layer
     test_CNN.add(Dropout(0.5))
-    test_CNN.add(MaxPooling1D(pool_size=2))
+    test_CNN.add(MaxPooling1D(pool_size=60))
     test_CNN.add(Flatten())
     test_CNN.add(Dense(100, activation='sigmoid'))
     test_CNN.add(Dropout(0.5))
 
     #output layer
     test_CNN.add(Dense(number_of_outputs, activation='sigmoid'))
+
+    #This is a keras method designed to plot the model as a diagram
+    #plot_model(test_CNN, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+    #SVG(model_to_dot(test_CNN).create(prog='dot', format='svg'))
+    #print(test_CNN.summary())
 
     #Compiles the model to run takes a series of metrics used while training the CNN, in this case we use Binary_Cross Entropy
     # as the loss function, adam as the optimizer, and accuracy as the evaluation metric used to judge success

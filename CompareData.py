@@ -72,7 +72,7 @@ class GraphObjects():
             self.updateGraph(self.counter)
 
 
-file1 = r"C:\Users\mpelkasj\Desktop\EEG_Data\B&W Data - Correct\JohnCorrect1595619934.npy"
+file1 = r"C:\Users\mpelkasj\Desktop\EEG_Data\B&W Data - Correct\JohnB&W1595619934.npy"
 file2 = r"C:\Users\mpelkasj\Desktop\EEG_Data\Y&P Data - Incorrect\JohnY&P1595622367.npy"
 
 root = tk.Tk()
