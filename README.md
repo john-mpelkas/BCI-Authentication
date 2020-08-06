@@ -1,4 +1,5 @@
 # BCI-Authentication
+Brain Computer Interface Authenticator
 
 **OVERVIEW**
 
